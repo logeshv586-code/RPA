@@ -1,0 +1,39 @@
+process_id: invoice_processing_v1
+name: Intelligent Invoice Processing
+intent: Validate and post supplier invoices with traceable evidence and safe recovery.
+version: 1.0.0
+platforms:
+  - automation_anywhere_a360
+  - api
+steps:
+  - id: receive_invoice
+    type: input
+    expected_outcome: invoice_document_available
+    recovery:
+      - retry_source
+      - route_to_human
+  - id: extract_invoice
+    type: document_ai
+    expected_outcome: required_fields_extracted
+    recovery:
+      - alternate_extractor
+      - route_to_validation
+  - id: validate_vendor
+    type: api
+    expected_outcome: vendor_verified
+    recovery:
+      - retry_with_backoff
+      - alternate_api
+  - id: post_invoice
+    type: application
+    expected_outcome: invoice_posted
+    recovery:
+      - refresh_session
+      - approved_fallback_selector
+      - route_to_human
+policies:
+  auto_heal_max_confidence_risk: low
+  require_approval_for:
+    - credential_change
+    - financial_value_change
+    - destructive_action
