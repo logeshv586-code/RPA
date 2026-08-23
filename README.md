@@ -4,9 +4,7 @@
 
 <h3 align="center">The Autonomous Reliability & Intelligence Layer for Enterprise Automation</h3>
 
-<p align="center">
-  <strong>Observe · Understand · Decide · Heal · Govern · Learn</strong>
-</p>
+<p align="center"><strong>Observe · Understand · Decide · Heal · Govern · Learn</strong></p>
 
 ---
 
@@ -67,30 +65,11 @@ See the full **[Product Blueprint](docs/PRODUCT_BLUEPRINT.md)**.
 
 A versioned, machine-readable description of the automation's **intent**, not only its implementation.
 
-A Genome can describe:
-
-- Business outcome and owner
-- Process steps and expected outcomes
-- Applications, APIs and dependencies
-- Selectors and alternate selectors
-- Data contracts and transaction rules
-- SLA and timing expectations
-- Known business and technical exceptions
-- Recovery playbooks
-- Risk classification and approval requirements
+A Genome can describe business outcome and owner, process steps, expected outcomes, applications, APIs, selectors, data contracts, SLAs, known exceptions, recovery playbooks, risk classification and approvals.
 
 ### 🛰️ Live Process Twin
 
-A runtime representation assembled from the Process Genome + current events + execution evidence.
-
-It answers:
-
-- Where is this run now?
-- What should have happened next?
-- Which dependency changed?
-- Is the delay normal or anomalous?
-- What evidence is available?
-- Is recovery still safe?
+A runtime representation assembled from the Process Genome + current events + execution evidence. It answers where the run is now, what should happen next, which dependency changed, what evidence is available and whether recovery is still safe.
 
 ### 🧠 Failure Intelligence
 
@@ -104,18 +83,7 @@ Target classes include:
 
 The Recovery Brain does not simply retry everything. It evaluates evidence, previous outcomes, available adapter capabilities, idempotency, confidence, risk and policy.
 
-Potential strategies include:
-
-- Retry with bounded exponential backoff
-- Resume from safe checkpoint
-- Requeue transaction
-- Refresh application/session
-- Use approved selector fallback
-- Switch to an alternate API route
-- Route a business exception
-- Pause a process with circuit breaker
-- Request human approval
-- Escalate with complete evidence
+Potential strategies include bounded retry, resume from checkpoint, requeue, session refresh, approved selector fallback, alternate API route, business-exception routing, circuit breaker, human approval and evidence-rich escalation.
 
 ### 🛡️ Policy-bounded autonomy
 
@@ -226,8 +194,6 @@ More workflow drawings: **[docs/WORKFLOWS.md](docs/WORKFLOWS.md)**
 
 ## Product autonomy levels
 
-RPA-X should earn autonomy gradually.
-
 | Level | Mode | Meaning |
 |---|---|---|
 | **A0** | Observe | Diagnose only; no recovery writes |
@@ -237,11 +203,19 @@ RPA-X should earn autonomy gradually.
 | **A4** | Adaptive | Previously validated recovery patterns may be reused inside policy |
 | **A5** | Autonomous | Future research target; still governed by hard policy boundaries |
 
+## Command Center foundation preview
+
+RPA-X now includes a lightweight integrated **Command Center preview** served by the same FastAPI product. It reads the live `/health` and `/capabilities` APIs and presents the product identity, control loop, autonomy model and current capability registry.
+
+This is intentionally a **foundation preview**, not yet a production monitoring dashboard. Real bot health, run history, SLA metrics and recovery evidence will be connected as the persistence and platform adapters are built.
+
 ## What exists in the repository today
 
-Current foundation code includes:
+Current foundation includes:
 
 - ✅ FastAPI service
+- ✅ Unified product manifest and capability registry
+- ✅ Integrated Command Center preview
 - ✅ Runtime event model
 - ✅ Failure classification foundation
 - ✅ Recovery strategy foundation
@@ -250,15 +224,15 @@ Current foundation code includes:
 - ✅ Vendor-neutral adapter interface
 - ✅ Sample Process Genome
 - ✅ Unit tests
-- ✅ GitHub Actions CI
+- ✅ GitHub Actions CI definition
 - ✅ Product architecture and workflow documentation
-- ✅ RPA-X application icon and product identity
+- ✅ RPA-X executive application icon and wordmark
 
 The following are **planned**, not yet production-complete:
 
 - 🚧 Persistent operational database
 - 🚧 Automation Anywhere A360 Control Room adapter
-- 🚧 Web Command Center
+- 🚧 Production Command Center telemetry and dashboards
 - 🚧 Policy-as-code engine
 - 🚧 Human approval service
 - 🚧 Shadow execution environment
@@ -309,26 +283,6 @@ A bot expects a button, but the target application changes its DOM.
 
 **Important:** the target design does not silently rewrite production bot source packages. Runtime recovery and permanent source changes are separate governed workflows.
 
-## Example use case: API timeout
-
-```text
-API timeout
-   ↓
-Classify transient failure
-   ↓
-Verify operation is safe/idempotent
-   ↓
-Policy allows bounded retry
-   ↓
-Exponential backoff
-   ↓
-Validate response + downstream state
-   ↓
-Record evidence and recovery outcome
-```
-
-A technical retry should never be used for a genuine business exception.
-
 ## Repository structure
 
 ```text
@@ -341,6 +295,7 @@ RPA/
 │   ├── ledger.py
 │   ├── main.py
 │   ├── models.py
+│   ├── product.py
 │   └── twin.py
 ├── adapters/
 │   └── base.py
@@ -352,46 +307,38 @@ RPA/
 │   ├── ROADMAP.md
 │   ├── SECURITY_GOVERNANCE.md
 │   └── WORKFLOWS.md
+├── web/
+│   ├── app.css
+│   ├── app.js
+│   ├── index.html
+│   └── rpa-x-app-icon.svg
 ├── tests/
 ├── .github/workflows/
 ├── pyproject.toml
 └── README.md
 ```
 
-## Run the current MVP
+## Run the current product foundation
 
 ```bash
 git clone https://github.com/logeshv586-code/RPA.git
 cd RPA
 python -m venv .venv
-```
-
-Activate the environment and install the project:
-
-```bash
 pip install -e .
 uvicorn app.main:app --reload
 ```
 
-Then open the FastAPI documentation at:
+Open the product surfaces:
 
 ```text
-http://127.0.0.1:8000/docs
+Command Center preview: http://127.0.0.1:8000/ui/
+FastAPI documentation:  http://127.0.0.1:8000/docs
+Product manifest:       http://127.0.0.1:8000/
+Capability registry:    http://127.0.0.1:8000/capabilities
+Health:                 http://127.0.0.1:8000/health
 ```
 
-Health endpoint:
-
-```text
-GET /health
-```
-
-Runtime event endpoint:
-
-```text
-POST /events
-```
-
-## Example event
+## Example runtime event
 
 ```json
 {
@@ -403,7 +350,7 @@ POST /events
 }
 ```
 
-The current engine can classify the event and select a basic recovery decision. Future versions will enrich that decision with process state, evidence, policy, history and outcome validation.
+Send it to `POST /events`. The current engine can classify the event and select a basic recovery decision. Future versions will enrich that decision with process state, evidence, policy, history and outcome validation.
 
 ## Design principles
 
@@ -421,8 +368,6 @@ The current engine can classify the event and select a basic recovery decision. 
 ## Roadmap
 
 The detailed roadmap is maintained in **[docs/ROADMAP.md](docs/ROADMAP.md)**.
-
-High-level progression:
 
 ```mermaid
 flowchart LR
