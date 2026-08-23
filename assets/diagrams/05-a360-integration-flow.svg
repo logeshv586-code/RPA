@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050914"/><stop offset="1" stop-color="#111B38"/></linearGradient>
+<linearGradient id="rpax" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2CE7FF"/><stop offset=".5" stop-color="#4E78FF"/><stop offset="1" stop-color="#9A5FFF"/></linearGradient>
+<style>.h{font:800 40px Inter,Segoe UI,Arial;fill:#F3F8FF}.t{font:700 21px Inter,Segoe UI,Arial;fill:#F4F8FF}.s{font:500 15px Inter,Segoe UI,Arial;fill:#A7B7D2}.cap{font:800 16px Inter,Segoe UI,Arial;fill:#8EA5C8;letter-spacing:2px}</style>
+</defs>
+<rect width="1600" height="900" rx="36" fill="url(#bg)"/>
+<text x="800" y="64" text-anchor="middle" class="h">Automation Anywhere A360 → RPA-X</text>
+<text x="800" y="102" text-anchor="middle" class="s" font-size="18">Read-first observability → diagnosis → policy-controlled recovery</text>
+<!-- A360 -->
+<rect x="70" y="185" width="420" height="560" rx="34" fill="#0D1830" stroke="#24538B" stroke-width="2"/>
+<text x="280" y="232" text-anchor="middle" class="cap">AUTOMATION ANYWHERE A360</text>
+<rect x="120" y="275" width="320" height="78" rx="20" fill="#102447" stroke="#3E7BC2"/><text x="280" y="309" text-anchor="middle" class="t">Control Room</text><text x="280" y="336" text-anchor="middle" class="s">authentication · orchestration</text>
+<rect x="120" y="380" width="145" height="92" rx="18" fill="#10203A" stroke="#2C5A95"/><text x="192" y="417" text-anchor="middle" class="t">Bot Runs</text><text x="192" y="445" text-anchor="middle" class="s">status · timing</text>
+<rect x="295" y="380" width="145" height="92" rx="18" fill="#10203A" stroke="#2C5A95"/><text x="367" y="417" text-anchor="middle" class="t">Devices</text><text x="367" y="445" text-anchor="middle" class="s">runner health</text>
+<rect x="120" y="500" width="145" height="92" rx="18" fill="#10203A" stroke="#2C5A95"/><text x="192" y="537" text-anchor="middle" class="t">Queues</text><text x="192" y="565" text-anchor="middle" class="s">work items</text>
+<rect x="295" y="500" width="145" height="92" rx="18" fill="#10203A" stroke="#2C5A95"/><text x="367" y="537" text-anchor="middle" class="t">Errors</text><text x="367" y="565" text-anchor="middle" class="s">logs · evidence</text>
+<rect x="120" y="625" width="320" height="70" rx="18" fill="#171D36" stroke="#FFB45A"/><text x="280" y="655" text-anchor="middle" class="t">Controlled Write Actions</text><text x="280" y="681" text-anchor="middle" class="s">retry · requeue · resume — future / policy gated</text>
+<!-- adapter -->
+<rect x="555" y="300" width="250" height="280" rx="30" fill="#0C1A35" stroke="#2CE7FF" stroke-width="3"/>
+<text x="680" y="345" text-anchor="middle" class="cap">A360 ADAPTER</text>
+<rect x="600" y="380" width="160" height="52" rx="15" fill="#102447"/><text x="680" y="413" text-anchor="middle" class="t">Authenticate</text>
+<rect x="600" y="450" width="160" height="52" rx="15" fill="#102447"/><text x="680" y="483" text-anchor="middle" class="t">Normalize</text>
+<rect x="600" y="520" width="160" height="34" rx="13" fill="#11312E" stroke="#4EE6A8"/><text x="680" y="543" text-anchor="middle" class="s">READ-ONLY FIRST</text>
+<!-- RPA-X -->
+<rect x="870" y="170" width="660" height="590" rx="36" fill="#0D1731" stroke="url(#rpax)" stroke-width="3"/>
+<text x="1200" y="220" text-anchor="middle" class="cap">RPA-X AUTOMATION RELIABILITY OS</text>
+<rect x="930" y="270" width="240" height="90" rx="20" fill="#12234B" stroke="#3D7FFF"/><text x="1050" y="307" text-anchor="middle" class="t">Process Twin</text><text x="1050" y="334" text-anchor="middle" class="s">live run state</text>
+<rect x="1230" y="270" width="240" height="90" rx="20" fill="#12234B" stroke="#3D7FFF"/><text x="1350" y="307" text-anchor="middle" class="t">Failure Intelligence</text><text x="1350" y="334" text-anchor="middle" class="s">diagnosis + evidence</text>
+<rect x="930" y="405" width="240" height="90" rx="20" fill="#181E49" stroke="#8268FF"/><text x="1050" y="442" text-anchor="middle" class="t">Recovery Brain</text><text x="1050" y="469" text-anchor="middle" class="s">candidate strategies</text>
+<rect x="1230" y="405" width="240" height="90" rx="20" fill="#181E49" stroke="#8268FF"/><text x="1350" y="442" text-anchor="middle" class="t">Policy + Risk</text><text x="1350" y="469" text-anchor="middle" class="s">allow · approve · deny</text>
+<rect x="930" y="540" width="240" height="90" rx="20" fill="#102A34" stroke="#4EE6A8"/><text x="1050" y="577" text-anchor="middle" class="t">Outcome Validator</text><text x="1050" y="604" text-anchor="middle" class="s">technical + business success</text>
+<rect x="1230" y="540" width="240" height="90" rx="20" fill="#102A34" stroke="#4EE6A8"/><text x="1350" y="577" text-anchor="middle" class="t">Evidence Ledger</text><text x="1350" y="604" text-anchor="middle" class="s">audit + recovery memory</text>
+<rect x="1000" y="665" width="400" height="50" rx="16" fill="#101B34" stroke="#395D94"/><text x="1200" y="697" text-anchor="middle" class="s">Command Center: bot health · SLA · incidents · recovery status</text>
+<!-- arrows -->
+<g fill="none" stroke="#4F7DFF" stroke-width="4" stroke-linecap="round"><path d="M490 455H555"/><path d="M805 440H870"/><path d="M1170 315H1230"/><path d="M1350 360V405"/><path d="M1230 450H1170"/><path d="M1050 495V540"/><path d="M1170 585H1230"/></g>
+<path d="M1350 495C1350 760 680 800 680 580" fill="none" stroke="#FFB45A" stroke-width="3" stroke-dasharray="8 10"/>
+<text x="935" y="803" class="s">Controlled recovery writes return through the adapter only after policy approval</text>
+</svg>
