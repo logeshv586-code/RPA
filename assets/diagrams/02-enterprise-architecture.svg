@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#040812"/><stop offset="1" stop-color="#111B38"/></linearGradient>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2CE7FF"/><stop offset="1" stop-color="#5B74FF"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#766CFF"/><stop offset="1" stop-color="#B85CFF"/></linearGradient>
+<style>.h{font:800 38px Inter,Segoe UI,Arial;fill:#F1F7FF}.k{font:700 21px Inter,Segoe UI,Arial;fill:#EAF3FF}.s{font:500 15px Inter,Segoe UI,Arial;fill:#A4B5D0}.lane{font:800 17px Inter,Segoe UI,Arial;fill:#8FA6C9;letter-spacing:2px}</style>
+</defs>
+<rect width="1600" height="980" rx="38" fill="url(#bg)"/>
+<text x="800" y="62" text-anchor="middle" class="h">RPA-X Enterprise Architecture</text>
+<text x="800" y="98" text-anchor="middle" class="s" font-size="18">Vendor-neutral intelligence, recovery and governance plane above every automation runtime</text>
+<!-- lanes -->
+<rect x="70" y="145" width="1460" height="150" rx="28" fill="#0A142A" stroke="#1B375F"/>
+<text x="95" y="180" class="lane">AUTOMATION RUNTIME LAYER</text>
+<g>
+<rect x="110" y="205" width="210" height="62" rx="16" fill="#101E39" stroke="#2A5B9D"/><text x="215" y="243" text-anchor="middle" class="k">Automation Anywhere</text>
+<rect x="345" y="205" width="175" height="62" rx="16" fill="#101E39" stroke="#2A5B9D"/><text x="432" y="243" text-anchor="middle" class="k">UiPath</text>
+<rect x="545" y="205" width="205" height="62" rx="16" fill="#101E39" stroke="#2A5B9D"/><text x="647" y="243" text-anchor="middle" class="k">Power Automate</text>
+<rect x="775" y="205" width="210" height="62" rx="16" fill="#101E39" stroke="#2A5B9D"/><text x="880" y="243" text-anchor="middle" class="k">Browser / Selenium</text>
+<rect x="1010" y="205" width="190" height="62" rx="16" fill="#101E39" stroke="#2A5B9D"/><text x="1105" y="243" text-anchor="middle" class="k">APIs / Lambda</text>
+<rect x="1225" y="205" width="260" height="62" rx="16" fill="#101E39" stroke="#2A5B9D"/><text x="1355" y="243" text-anchor="middle" class="k">VM · VDI · Queue · DB</text>
+</g>
+<!-- integration -->
+<rect x="70" y="325" width="1460" height="130" rx="28" fill="#0B1730" stroke="#21477B"/>
+<text x="95" y="360" class="lane">INTEGRATION FABRIC</text>
+<rect x="220" y="382" width="300" height="48" rx="14" fill="#102447" stroke="#2CE7FF"/><text x="370" y="413" text-anchor="middle" class="k">Platform Adapters</text>
+<rect x="650" y="382" width="300" height="48" rx="14" fill="#102447" stroke="#2CE7FF"/><text x="800" y="413" text-anchor="middle" class="k">Runtime Event Gateway</text>
+<rect x="1080" y="382" width="300" height="48" rx="14" fill="#102447" stroke="#2CE7FF"/><text x="1230" y="413" text-anchor="middle" class="k">Event Normalizer</text>
+<g stroke="#3B7FFF" stroke-width="3" fill="none"><path d="M520 406H650"/><path d="M950 406H1080"/></g>
+<!-- core -->
+<rect x="70" y="485" width="930" height="300" rx="30" fill="#0B142A" stroke="#2F4C8B"/>
+<text x="95" y="523" class="lane">RPA-X INTELLIGENCE CORE</text>
+<rect x="110" y="555" width="260" height="82" rx="18" fill="#12234B" stroke="url(#g1)"/><text x="240" y="589" text-anchor="middle" class="k">Process Genome</text><text x="240" y="615" text-anchor="middle" class="s">intent · rules · recovery playbooks</text>
+<rect x="405" y="555" width="260" height="82" rx="18" fill="#12234B" stroke="url(#g1)"/><text x="535" y="589" text-anchor="middle" class="k">Live Process Twin</text><text x="535" y="615" text-anchor="middle" class="s">real-time execution state</text>
+<rect x="700" y="555" width="260" height="82" rx="18" fill="#12234B" stroke="url(#g1)"/><text x="830" y="589" text-anchor="middle" class="k">Failure Intelligence</text><text x="830" y="615" text-anchor="middle" class="s">evidence-driven diagnosis</text>
+<rect x="255" y="675" width="300" height="82" rx="18" fill="#1A1D4A" stroke="url(#g2)"/><text x="405" y="709" text-anchor="middle" class="k">Recovery Brain</text><text x="405" y="735" text-anchor="middle" class="s">rank · reason · select</text>
+<rect x="590" y="675" width="300" height="82" rx="18" fill="#1A1D4A" stroke="url(#g2)"/><text x="740" y="709" text-anchor="middle" class="k">Recovery Memory</text><text x="740" y="735" text-anchor="middle" class="s">validated patterns · history</text>
+<!-- governance -->
+<rect x="1030" y="485" width="500" height="300" rx="30" fill="#11152D" stroke="#5A428E"/>
+<text x="1055" y="523" class="lane">GOVERNANCE & SAFETY</text>
+<rect x="1070" y="555" width="200" height="70" rx="18" fill="#191B42" stroke="#8B68FF"/><text x="1170" y="598" text-anchor="middle" class="k">Risk Engine</text>
+<rect x="1290" y="555" width="200" height="70" rx="18" fill="#191B42" stroke="#8B68FF"/><text x="1390" y="598" text-anchor="middle" class="k">Policy Engine</text>
+<rect x="1070" y="650" width="200" height="70" rx="18" fill="#191B42" stroke="#8B68FF"/><text x="1170" y="693" text-anchor="middle" class="k">Human Gate</text>
+<rect x="1290" y="650" width="200" height="70" rx="18" fill="#191B42" stroke="#8B68FF"/><text x="1390" y="683" text-anchor="middle" class="k">RBAC / Secrets</text><text x="1390" y="706" text-anchor="middle" class="s">audit controls</text>
+<!-- assurance -->
+<rect x="70" y="815" width="1460" height="110" rx="28" fill="#0B1730" stroke="#21477B"/>
+<text x="95" y="850" class="lane">EXECUTION & ASSURANCE</text>
+<g>
+<rect x="230" y="860" width="220" height="44" rx="13" fill="#102447" stroke="#53E0C0"/><text x="340" y="889" text-anchor="middle" class="k">Recovery Executor</text>
+<rect x="485" y="860" width="190" height="44" rx="13" fill="#102447" stroke="#53E0C0"/><text x="580" y="889" text-anchor="middle" class="k">Shadow Lab</text>
+<rect x="710" y="860" width="220" height="44" rx="13" fill="#102447" stroke="#53E0C0"/><text x="820" y="889" text-anchor="middle" class="k">Outcome Validator</text>
+<rect x="965" y="860" width="220" height="44" rx="13" fill="#102447" stroke="#53E0C0"/><text x="1075" y="889" text-anchor="middle" class="k">Evidence Ledger</text>
+<rect x="1220" y="860" width="170" height="44" rx="13" fill="#102447" stroke="#53E0C0"/><text x="1305" y="889" text-anchor="middle" class="k">Observability</text>
+</g>
+<!-- flow arrows -->
+<g stroke="#4D7DFF" stroke-width="3" fill="none" opacity=".8"><path d="M800 295V325"/><path d="M1230 455V485"/><path d="M535 455V555"/><path d="M535 637V675"/><path d="M890 716H1030"/><path d="M1280 785V815"/><path d="M405 757V815"/></g>
+</svg>
