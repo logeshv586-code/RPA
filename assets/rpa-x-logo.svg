@@ -9,7 +9,12 @@
       <stop stop-color="#071426"/>
       <stop offset="1" stop-color="#111B3D"/>
     </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1180" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FBFF"/>
+      <stop offset="1" stop-color="#EEF4FF"/>
+    </linearGradient>
   </defs>
+  <rect x="1" y="1" width="1178" height="278" rx="30" fill="url(#panel)" stroke="#DCE7F5" stroke-width="2"/>
   <rect x="10" y="10" width="260" height="260" rx="68" fill="url(#bg)"/>
   <rect x="20" y="20" width="240" height="240" rx="60" stroke="url(#mark)" stroke-width="2" opacity="0.75"/>
   <path d="M140 48L218 93V183L140 228L62 183V93L140 48Z" stroke="url(#mark)" stroke-width="11" stroke-linejoin="round"/>
