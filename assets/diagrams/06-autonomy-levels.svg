@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="820" viewBox="0 0 1600 820">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050914"/><stop offset="1" stop-color="#111B38"/></linearGradient>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#2CE7FF"/><stop offset=".45" stop-color="#4F7DFF"/><stop offset="1" stop-color="#A25BFF"/></linearGradient>
+<style>.h{font:800 40px Inter,Segoe UI,Arial;fill:#F3F8FF}.t{font:700 20px Inter,Segoe UI,Arial;fill:#F4F8FF}.s{font:500 15px Inter,Segoe UI,Arial;fill:#A7B7D2}.a{font:900 24px Inter,Segoe UI,Arial;fill:#06101D}</style>
+</defs>
+<rect width="1600" height="820" rx="36" fill="url(#bg)"/>
+<text x="800" y="66" text-anchor="middle" class="h">RPA-X Autonomy Maturity Model</text>
+<text x="800" y="104" text-anchor="middle" class="s" font-size="18">Autonomy is earned progressively — stronger capability never removes policy boundaries</text>
+<!-- axis -->
+<path d="M130 665H1470" stroke="url(#g)" stroke-width="8" stroke-linecap="round"/>
+<path d="M1450 645L1480 665L1450 685" fill="none" stroke="#A25BFF" stroke-width="8"/>
+<text x="130" y="712" class="s">Human-driven</text><text x="1470" y="712" text-anchor="end" class="s">Increasing bounded autonomy</text>
+<!-- levels -->
+<g>
+<rect x="100" y="505" width="205" height="130" rx="24" fill="#0D1E36" stroke="#2CE7FF"/><circle cx="140" cy="545" r="21" fill="#2CE7FF"/><text x="140" y="553" text-anchor="middle" class="a">A0</text><text x="175" y="548" class="t">Observe</text><text x="125" y="584" class="s">Detect + diagnose</text><text x="125" y="609" class="s">No recovery writes</text>
+<rect x="325" y="445" width="205" height="190" rx="24" fill="#0D1E36" stroke="#48B7FF"/><circle cx="365" cy="485" r="21" fill="#48B7FF"/><text x="365" y="493" text-anchor="middle" class="a">A1</text><text x="400" y="488" class="t">Recommend</text><text x="350" y="527" class="s">Rank recovery options</text><text x="350" y="552" class="s">Operator executes</text><text x="350" y="577" class="s">Evidence explained</text>
+<rect x="550" y="385" width="205" height="250" rx="24" fill="#101C3C" stroke="#557EFF"/><circle cx="590" cy="425" r="21" fill="#557EFF"/><text x="590" y="433" text-anchor="middle" class="a">A2</text><text x="625" y="428" class="t">Assist</text><text x="575" y="467" class="s">RPA-X prepares action</text><text x="575" y="492" class="s">Human approval needed</text><text x="575" y="517" class="s">Execution is governed</text><text x="575" y="542" class="s">Outcome validated</text>
+<rect x="775" y="315" width="205" height="320" rx="24" fill="#141A43" stroke="#756CFF"/><circle cx="815" cy="355" r="21" fill="#756CFF"/><text x="815" y="363" text-anchor="middle" class="a">A3</text><text x="850" y="358" class="t">Auto-Heal</text><text x="800" y="397" class="s">Allow-listed low-risk</text><text x="800" y="422" class="s">recovery executes</text><text x="800" y="447" class="s">bounded retry + rollback</text><text x="800" y="472" class="s">policy always checked</text><text x="800" y="497" class="s">full audit evidence</text>
+<rect x="1000" y="245" width="205" height="390" rx="24" fill="#171943" stroke="#9565FF"/><circle cx="1040" cy="285" r="21" fill="#9565FF"/><text x="1040" y="293" text-anchor="middle" class="a">A4</text><text x="1075" y="288" class="t">Adaptive</text><text x="1025" y="327" class="s">Reuse validated patterns</text><text x="1025" y="352" class="s">Recovery Memory assists</text><text x="1025" y="377" class="s">Context-aware selection</text><text x="1025" y="402" class="s">still policy bounded</text><text x="1025" y="427" class="s">confidence calibrated</text>
+<rect x="1225" y="165" width="250" height="470" rx="24" fill="#1B183D" stroke="#B35BFF"/><circle cx="1268" cy="205" r="21" fill="#B35BFF"/><text x="1268" y="213" text-anchor="middle" class="a">A5</text><text x="1305" y="208" class="t">Autonomous*</text><text x="1250" y="247" class="s">Future research target</text><text x="1250" y="272" class="s">Multi-step adaptive repair</text><text x="1250" y="297" class="s">Hard safety boundaries</text><text x="1250" y="322" class="s">No unrestricted authority</text><text x="1250" y="347" class="s">Human override retained</text><text x="1250" y="390" class="s">*Not a current production claim</text>
+</g>
+<rect x="460" y="735" width="680" height="48" rx="16" fill="#09162B" stroke="#304F83"/><text x="800" y="766" text-anchor="middle" class="s">Principle: capability may increase; governance authority does not disappear.</text>
+</svg>
