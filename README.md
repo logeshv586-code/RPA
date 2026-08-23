@@ -1,100 +1,453 @@
-# RPA-X — Autonomous Self-Healing RPA Control Plane
+<p align="center">
+  <img src="assets/rpa-x-logo.svg" alt="RPA-X — Autonomous Automation Control Plane" width="900" />
+</p>
 
-RPA-X is an open, vendor-neutral control plane for making enterprise automations more resilient, observable, and intelligent.
+<h3 align="center">The Autonomous Reliability & Intelligence Layer for Enterprise Automation</h3>
 
-The core idea is simple: instead of treating an RPA bot as a fixed script, RPA-X gives every automation a **Process Genome** — a machine-readable description of its intent, steps, selectors, APIs, data contracts, expected outcomes, and approved recovery strategies. During execution, RPA-X builds a **Live Process Twin**, watches what is happening, detects drift or failure, and selects the safest recovery path.
+<p align="center">
+  <strong>Observe · Understand · Decide · Heal · Govern · Learn</strong>
+</p>
 
-> Goal: move RPA from **run → fail → ticket → manual fix** to **run → detect → reason → recover → learn**.
+---
 
-## Why this project
+# RPA-X
 
-Traditional RPA platforms are strong at execution, but production support is still heavily reactive. Common failures include selector changes, slow applications, missing data, expired sessions, API changes, environment issues, and business-rule exceptions.
+**RPA-X** is being built as a single, vendor-neutral enterprise product for operating automations across RPA platforms, APIs, browsers, desktops, queues and serverless workloads.
 
-RPA-X is being built as a separate intelligence and reliability layer that can sit above tools such as Automation Anywhere A360, UiPath, Power Automate, Selenium, desktop automation, APIs, and serverless functions.
+It is not another bot designer. RPA-X sits **above automation runtimes** and gives the automation estate one intelligence, reliability, recovery and governance control plane.
 
-## Core concepts
+> **North-star:** move enterprise automation from **run → fail → ticket → investigate → fix → restart** to **run → observe → understand → recover → validate → learn** — without sacrificing human control, security or auditability.
 
-### 1. Process Genome
-A portable definition of what an automation is trying to achieve, not just how it clicks through a UI.
+## Why RPA-X exists
 
-### 2. Live Process Twin
-A runtime model of the current automation state, expected next state, dependencies, timing, and evidence.
+Production automation support is still highly reactive. A selector moves, an API slows down, a session expires, a queue item is corrupted, a VM becomes unhealthy, or an application changes. The bot fails, an incident is created, and a human reconstructs what happened.
 
-### 3. Failure Intelligence
-Classifies failures into business, technical, application, data, credential, API, infrastructure, and unknown categories.
+RPA-X is designed to turn that fragmented support model into a unified reliability loop.
 
-### 4. Self-Healing Engine
-Ranks recovery strategies such as retry, alternate selector, alternate API, session refresh, fallback path, requeue, or human approval.
-
-### 5. Shadow Validation
-Potential fixes can be simulated or validated before they are trusted for unattended execution.
-
-### 6. Evidence Ledger
-Every decision records what happened, why a recovery was selected, its confidence, result, and audit evidence.
-
-## MVP architecture
-
-```text
-RPA / API / Browser / Desktop Events
-                |
-                v
-        Runtime Event Gateway
-                |
-                v
-       Live Process Twin Engine
-                |
-        +-------+--------+
-        |                |
-        v                v
- Failure Classifier   Policy Engine
-        |                |
-        +-------+--------+
-                |
-                v
-        Healing Strategy Engine
-                |
-        +-------+--------+
-        |                |
-        v                v
-  Auto Recovery     Human Approval
-        |
-        v
-      Evidence Ledger
+```mermaid
+flowchart LR
+    A[Automation executes] --> B[RPA-X observes]
+    B --> C[Live Process Twin]
+    C --> D[Failure Intelligence]
+    D --> E[Recovery Brain]
+    E --> F{Policy + Risk}
+    F -->|Low-risk allowed| G[Auto-heal]
+    F -->|Approval required| H[Human Control Gate]
+    H --> G
+    G --> I[Outcome Validation]
+    I --> J[Evidence Ledger]
+    J --> K[Recovery Memory]
+    K --> B
 ```
 
-## First MVP
+## One product, one control plane
 
-The first version will provide:
+RPA-X is intentionally designed as **one coherent platform**, not separate tools stitched together.
 
-- FastAPI service for RPA runtime events
-- Process/run data model
-- Failure classification
-- Recovery strategy ranking
-- Policy-based safe auto-healing
-- Evidence/audit records
-- Unit tests
-- Adapter interface for Automation Anywhere, UiPath, Power Automate, Selenium, and APIs
+| Product capability | What it does |
+|---|---|
+| **Command Center** | One operational view of bots, processes, transactions, failures, SLAs and recovery status |
+| **Process Genome Studio** | Defines automation intent, expected outcomes, dependencies, known exceptions and safe recovery strategies |
+| **Live Process Twin** | Maintains a real-time model of where an automation is versus where it should be |
+| **Failure Intelligence** | Diagnoses business, application, API, data, credential, infrastructure and unknown failures |
+| **Recovery Brain** | Ranks recovery strategies using evidence, history, confidence and platform capabilities |
+| **Shadow Lab** | Tests candidate recoveries before they are trusted in production |
+| **Human Control Gate** | Routes medium/high-risk actions for approval instead of blindly executing them |
+| **Evidence Ledger** | Records what happened, why a decision was made, what policy allowed it and whether it worked |
+| **Recovery Memory** | Learns from validated recoveries and recognizes repeated failure patterns |
+| **Integration Fabric** | Normalizes Automation Anywhere, UiPath, Power Automate, Selenium, APIs, queues and infrastructure |
+| **Policy & Governance** | Controls autonomy levels, risk, RBAC, secrets, environment restrictions and auditability |
+| **Automation FinOps** | Target capability for support cost, reliability, utilization and business value metrics |
 
-## Example use case
+See the full **[Product Blueprint](docs/PRODUCT_BLUEPRINT.md)**.
 
-A bot expects a page element but the application UI changes.
+## The core innovation model
 
-1. RPA-X receives the failure event.
-2. The Process Twin identifies the failed step and expected outcome.
-3. Failure Intelligence classifies the problem as an application/UI drift issue.
-4. The Healing Engine evaluates approved alternatives.
-5. A safe fallback selector or API route is selected.
-6. The recovery is executed or placed into approval depending on policy.
-7. Evidence is stored so the system can learn which recovery works best over time.
+### 🧬 Process Genome
 
-## Vision
+A versioned, machine-readable description of the automation's **intent**, not only its implementation.
 
-RPA-X should become a practical open-source **autonomous reliability layer for RPA**, focused on production support, self-healing, explainability, vendor neutrality, and enterprise governance.
+A Genome can describe:
 
-## Status
+- Business outcome and owner
+- Process steps and expected outcomes
+- Applications, APIs and dependencies
+- Selectors and alternate selectors
+- Data contracts and transaction rules
+- SLA and timing expectations
+- Known business and technical exceptions
+- Recovery playbooks
+- Risk classification and approval requirements
 
-🚧 Foundation stage — architecture and first runnable MVP are being built now.
+### 🛰️ Live Process Twin
+
+A runtime representation assembled from the Process Genome + current events + execution evidence.
+
+It answers:
+
+- Where is this run now?
+- What should have happened next?
+- Which dependency changed?
+- Is the delay normal or anomalous?
+- What evidence is available?
+- Is recovery still safe?
+
+### 🧠 Failure Intelligence
+
+Failure diagnosis is normalized across platforms rather than being tied to one bot vendor.
+
+Target classes include:
+
+`business` · `application` · `selector/UI drift` · `api` · `data` · `credential` · `infrastructure` · `queue` · `timeout` · `unknown`
+
+### ⚡ Recovery Brain
+
+The Recovery Brain does not simply retry everything. It evaluates evidence, previous outcomes, available adapter capabilities, idempotency, confidence, risk and policy.
+
+Potential strategies include:
+
+- Retry with bounded exponential backoff
+- Resume from safe checkpoint
+- Requeue transaction
+- Refresh application/session
+- Use approved selector fallback
+- Switch to an alternate API route
+- Route a business exception
+- Pause a process with circuit breaker
+- Request human approval
+- Escalate with complete evidence
+
+### 🛡️ Policy-bounded autonomy
+
+AI confidence is **not** permission.
+
+```mermaid
+flowchart TD
+    A[Recovery candidate] --> B[Confidence score]
+    A --> C[Risk score]
+    B --> D[Policy Engine]
+    C --> D
+    D -->|Denied| E[No execution]
+    D -->|Approval| F[Human Control Gate]
+    D -->|Allow-listed low risk| G[Recovery Executor]
+    F -->|Approved| G
+    F -->|Rejected| E
+    G --> H[Outcome Validator]
+    H -->|Success| I[Evidence + Learning]
+    H -->|Failure| J[Stop / rollback / escalate]
+```
+
+Read **[Security & Governance](docs/SECURITY_GOVERNANCE.md)** for the safety model.
+
+## Target enterprise architecture
+
+```mermaid
+flowchart TB
+    subgraph Runtime[Automation Runtime Layer]
+      AA[Automation Anywhere A360]
+      UIP[UiPath]
+      PA[Power Automate]
+      WEB[Browser / Selenium]
+      APIS[APIs / Lambda]
+      INFRA[VM / VDI / Queues / DB]
+    end
+
+    subgraph Integration[RPA-X Integration Fabric]
+      ADAPTERS[Platform Adapters]
+      EVENTS[Runtime Event Gateway]
+      NORMAL[Event Normalizer]
+    end
+
+    subgraph Core[RPA-X Intelligence Core]
+      GENOME[Process Genome]
+      TWIN[Live Process Twin]
+      FAIL[Failure Intelligence]
+      BRAIN[Recovery Brain]
+      MEMORY[Recovery Memory]
+    end
+
+    subgraph Guardrails[Governance & Safety]
+      RISK[Risk Engine]
+      POLICY[Policy Engine]
+      HITL[Human Control Gate]
+      SECURITY[RBAC / Secrets]
+    end
+
+    subgraph Assurance[Execution & Assurance]
+      EXEC[Recovery Executor]
+      SHADOW[Shadow Lab]
+      VALIDATE[Outcome Validator]
+      LEDGER[Evidence Ledger]
+      OBS[Observability]
+    end
+
+    Runtime --> ADAPTERS --> EVENTS --> NORMAL --> TWIN
+    GENOME --> TWIN
+    TWIN --> FAIL --> BRAIN
+    MEMORY --> BRAIN
+    BRAIN --> RISK --> POLICY
+    POLICY -->|allowed| EXEC
+    POLICY -->|approval| HITL --> EXEC
+    EXEC --> SHADOW --> VALIDATE
+    VALIDATE --> LEDGER --> MEMORY
+    VALIDATE --> OBS
+```
+
+Detailed architecture: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
+
+## End-to-end self-healing workflow
+
+```mermaid
+flowchart TD
+    A[Bot / API / desktop event] --> B[Normalize event]
+    B --> C[Update Process Twin]
+    C --> D{Anomaly or failure?}
+    D -->|No| E[Continue monitoring]
+    D -->|Yes| F[Gather evidence]
+    F --> G[Classify failure]
+    G --> H[Generate recovery candidates]
+    H --> I[Score confidence + risk]
+    I --> J{Policy decision}
+    J -->|Observe only| K[Recommend / escalate]
+    J -->|Needs approval| L[Human Control Gate]
+    J -->|Allowed| M[Shadow validation]
+    L -->|Approved| M
+    L -->|Rejected| K
+    M --> N{Candidate safe?}
+    N -->|No| K
+    N -->|Yes| O[Execute recovery]
+    O --> P[Validate technical + business outcome]
+    P --> Q{Recovered?}
+    Q -->|Yes| R[Record + learn]
+    Q -->|No| S[Stop / rollback / incident]
+```
+
+More workflow drawings: **[docs/WORKFLOWS.md](docs/WORKFLOWS.md)**
+
+## Product autonomy levels
+
+RPA-X should earn autonomy gradually.
+
+| Level | Mode | Meaning |
+|---|---|---|
+| **A0** | Observe | Diagnose only; no recovery writes |
+| **A1** | Recommend | Suggest recovery to operators |
+| **A2** | Assist | Human approval required before execution |
+| **A3** | Bounded Auto-Heal | Allow-listed low-risk recoveries may execute automatically |
+| **A4** | Adaptive | Previously validated recovery patterns may be reused inside policy |
+| **A5** | Autonomous | Future research target; still governed by hard policy boundaries |
+
+## What exists in the repository today
+
+Current foundation code includes:
+
+- ✅ FastAPI service
+- ✅ Runtime event model
+- ✅ Failure classification foundation
+- ✅ Recovery strategy foundation
+- ✅ Live Process Twin foundation
+- ✅ Evidence Ledger foundation
+- ✅ Vendor-neutral adapter interface
+- ✅ Sample Process Genome
+- ✅ Unit tests
+- ✅ GitHub Actions CI
+- ✅ Product architecture and workflow documentation
+- ✅ RPA-X application icon and product identity
+
+The following are **planned**, not yet production-complete:
+
+- 🚧 Persistent operational database
+- 🚧 Automation Anywhere A360 Control Room adapter
+- 🚧 Web Command Center
+- 🚧 Policy-as-code engine
+- 🚧 Human approval service
+- 🚧 Shadow execution environment
+- 🚧 AI/LLM provider abstraction
+- 🚧 Selector discovery and visual/DOM recovery
+- 🚧 Multi-platform production adapters
+- 🚧 Enterprise SSO/RBAC/secrets integration
+- 🚧 Automation FinOps and predictive reliability
+
+This distinction is intentional: RPA-X should never market roadmap concepts as production features.
+
+## First target: Automation Anywhere A360
+
+The first enterprise runtime integration is planned around Automation Anywhere A360.
+
+```mermaid
+flowchart LR
+    CR[A360 Control Room] --> AD[A360 Adapter]
+    AD --> RUNS[Bot Runs]
+    AD --> DEV[Device / Runner Health]
+    AD --> QUEUE[Work Items / Queues]
+    AD --> ERR[Failure Evidence]
+    RUNS --> RPAX[RPA-X Process Twin]
+    DEV --> RPAX
+    QUEUE --> RPAX
+    ERR --> RPAX
+    RPAX --> POLICY[Policy Engine]
+    POLICY -->|future controlled write| REC[Retry / Requeue / Resume]
+    REC --> CR
+```
+
+The integration should start **read-only**, prove observability and diagnosis, then enable restricted recovery operations through explicit policy.
+
+## Example use case: UI selector drift
+
+A bot expects a button, but the target application changes its DOM.
+
+1. The runtime reports `selector not found`.
+2. RPA-X captures the failed step and available DOM/UI evidence.
+3. The Process Twin compares the expected outcome with the current state.
+4. Failure Intelligence classifies UI drift.
+5. The Recovery Brain finds candidate elements.
+6. Previously approved recovery memory is checked first.
+7. Candidate action is evaluated against risk and policy.
+8. Safe candidates are tested in the Shadow Lab.
+9. The business outcome is validated.
+10. Evidence is recorded and the validated fallback may be remembered.
+
+**Important:** the target design does not silently rewrite production bot source packages. Runtime recovery and permanent source changes are separate governed workflows.
+
+## Example use case: API timeout
+
+```text
+API timeout
+   ↓
+Classify transient failure
+   ↓
+Verify operation is safe/idempotent
+   ↓
+Policy allows bounded retry
+   ↓
+Exponential backoff
+   ↓
+Validate response + downstream state
+   ↓
+Record evidence and recovery outcome
+```
+
+A technical retry should never be used for a genuine business exception.
+
+## Repository structure
+
+```text
+RPA/
+├── assets/
+│   ├── rpa-x-app-icon.svg
+│   └── rpa-x-logo.svg
+├── app/
+│   ├── engine.py
+│   ├── ledger.py
+│   ├── main.py
+│   ├── models.py
+│   └── twin.py
+├── adapters/
+│   └── base.py
+├── genomes/
+│   └── sample_invoice_process.yaml
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── PRODUCT_BLUEPRINT.md
+│   ├── ROADMAP.md
+│   ├── SECURITY_GOVERNANCE.md
+│   └── WORKFLOWS.md
+├── tests/
+├── .github/workflows/
+├── pyproject.toml
+└── README.md
+```
+
+## Run the current MVP
+
+```bash
+git clone https://github.com/logeshv586-code/RPA.git
+cd RPA
+python -m venv .venv
+```
+
+Activate the environment and install the project:
+
+```bash
+pip install -e .
+uvicorn app.main:app --reload
+```
+
+Then open the FastAPI documentation at:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Health endpoint:
+
+```text
+GET /health
+```
+
+Runtime event endpoint:
+
+```text
+POST /events
+```
+
+## Example event
+
+```json
+{
+  "process_id": "invoice-processing",
+  "run_id": "run-2026-001",
+  "step_id": "submit-invoice",
+  "status": "failed",
+  "message": "API timeout while calling vendor endpoint"
+}
+```
+
+The current engine can classify the event and select a basic recovery decision. Future versions will enrich that decision with process state, evidence, policy, history and outcome validation.
+
+## Design principles
+
+1. **One product experience** — monitoring, diagnosis, recovery, governance and learning belong in one control plane.
+2. **Vendor neutral** — platform adapters translate runtimes into a common capability model.
+3. **Read first** — new enterprise integrations start in observation mode.
+4. **Intent before clicks** — reason from business outcome and expected state, not only selector errors.
+5. **Policy before autonomy** — AI can recommend; policy authorizes.
+6. **Evidence before confidence** — every recovery should be explainable.
+7. **Validate the outcome** — technical success is not automatically business success.
+8. **Unknown is acceptable** — RPA-X must never invent certainty to keep a process moving.
+9. **Recovery must stop** — bounded retries and circuit breakers prevent runaway automation.
+10. **Learn only from validated results** — failed or ambiguous repairs should not become trusted memory.
+
+## Roadmap
+
+The detailed roadmap is maintained in **[docs/ROADMAP.md](docs/ROADMAP.md)**.
+
+High-level progression:
+
+```mermaid
+flowchart LR
+    P0[Foundation] --> P1[Command Center]
+    P1 --> P2[A360 Integration]
+    P2 --> P3[Policy Recovery]
+    P3 --> P4[AI Intelligence]
+    P4 --> P5[Shadow + Self-Healing]
+    P5 --> P6[Multi-Platform]
+    P6 --> P7[Enterprise Scale]
+    P7 --> P8[Predictive Reliability]
+```
+
+## Long-term vision
+
+RPA-X should become an **Automation Reliability Operating System** for enterprises: one place to understand the health, intent, risk and recovery state of every important automation, regardless of which technology executes it.
+
+The product is successful when automation teams spend less time restarting bots and reconstructing incidents—and more time improving business processes—while security and governance teams gain **more** control, not less.
+
+## Project status
+
+**Stage:** early foundation / architecture build.
+
+The repository is public and evolving quickly. Production use is **not yet recommended**.
 
 ## License
 
-A license will be selected before the first public release.
+A project license has not yet been selected. A license should be chosen before the first public release intended for external adoption or contribution.
