@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050914"/><stop offset="1" stop-color="#111B38"/></linearGradient>
+  <linearGradient id="core" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#27E6FF"/><stop offset=".48" stop-color="#4C82FF"/><stop offset="1" stop-color="#9D5CFF"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <style>.t{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#EAF4FF}.s{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#8FA6C9}.role{font:700 24px Inter,Segoe UI,Arial,sans-serif;fill:#fff}.small{font:500 16px Inter,Segoe UI,Arial,sans-serif;fill:#A9BAD6}</style>
+</defs>
+<rect width="1600" height="900" rx="36" fill="url(#bg)"/>
+<text x="800" y="72" text-anchor="middle" class="t" font-size="42" font-weight="800">RPA-X — One Product, Enterprise-Wide Value</text>
+<text x="800" y="112" text-anchor="middle" class="s" font-size="20">A single automation reliability operating system for leadership, builders, operators and governance teams</text>
+<!-- core -->
+<circle cx="800" cy="455" r="174" fill="#0B1730" stroke="url(#core)" stroke-width="7" filter="url(#glow)"/>
+<circle cx="800" cy="455" r="128" fill="#0E1E3B" stroke="#2C6EFF" stroke-opacity=".45"/>
+<text x="800" y="427" text-anchor="middle" class="t" font-size="62" font-weight="900">RPA-X</text>
+<text x="800" y="467" text-anchor="middle" class="s" font-size="20" font-weight="700">AUTOMATION RELIABILITY OS</text>
+<text x="800" y="510" text-anchor="middle" class="t" font-size="18">Observe · Reason · Heal · Govern · Learn</text>
+<!-- connector lines -->
+<g stroke="#4D7DFF" stroke-width="2" stroke-opacity=".45" fill="none">
+<path d="M660 355L425 225"/><path d="M940 355L1175 225"/><path d="M625 455L350 455"/><path d="M975 455L1250 455"/><path d="M660 555L425 685"/><path d="M940 555L1175 685"/><path d="M800 281L800 165"/><path d="M800 629L800 755"/>
+</g>
+<!-- cards helper: each with simple person icon -->
+<g>
+  <rect x="210" y="150" width="340" height="150" rx="24" fill="#0D1830" stroke="#21477B"/>
+  <circle cx="264" cy="205" r="19" fill="#32D8FF"/><path d="M228 264c8-34 64-34 72 0" fill="#32D8FF" opacity=".8"/>
+  <text x="320" y="198" class="role">CEO / CIO</text><text x="320" y="230" class="small">Business resilience · ROI · risk</text><text x="320" y="258" class="small">One executive view of automation health</text>
+</g>
+<g>
+  <rect x="1050" y="150" width="340" height="150" rx="24" fill="#0D1830" stroke="#3C398C"/>
+  <circle cx="1104" cy="205" r="19" fill="#8C6CFF"/><path d="M1068 264c8-34 64-34 72 0" fill="#8C6CFF" opacity=".8"/>
+  <text x="1160" y="198" class="role">Automation CoE</text><text x="1160" y="230" class="small">Standards · governance · scale</text><text x="1160" y="258" class="small">Portfolio-wide control and learning</text>
+</g>
+<g>
+  <rect x="90" y="380" width="390" height="150" rx="24" fill="#0D1830" stroke="#21477B"/>
+  <circle cx="146" cy="435" r="19" fill="#53E0C0"/><path d="M110 494c8-34 64-34 72 0" fill="#53E0C0" opacity=".8"/>
+  <text x="205" y="428" class="role">Solution Architect</text><text x="205" y="460" class="small">Intent · integration · guardrails</text><text x="205" y="488" class="small">Portable architecture across vendors</text>
+</g>
+<g>
+  <rect x="1120" y="380" width="390" height="150" rx="24" fill="#0D1830" stroke="#3C398C"/>
+  <circle cx="1176" cy="435" r="19" fill="#FFB45A"/><path d="M1140 494c8-34 64-34 72 0" fill="#FFB45A" opacity=".8"/>
+  <text x="1235" y="428" class="role">Operations / Support</text><text x="1235" y="460" class="small">MTTR · incident evidence · recovery</text><text x="1235" y="488" class="small">Fewer blind restarts, faster diagnosis</text>
+</g>
+<g>
+  <rect x="210" y="610" width="340" height="150" rx="24" fill="#0D1830" stroke="#21477B"/>
+  <circle cx="264" cy="665" r="19" fill="#FF6FA7"/><path d="M228 724c8-34 64-34 72 0" fill="#FF6FA7" opacity=".8"/>
+  <text x="320" y="658" class="role">Developer</text><text x="320" y="690" class="small">Reusable recovery · diagnostics</text><text x="320" y="718" class="small">Less support toil, better bot quality</text>
+</g>
+<g>
+  <rect x="1050" y="610" width="340" height="150" rx="24" fill="#0D1830" stroke="#3C398C"/>
+  <circle cx="1104" cy="665" r="19" fill="#7BD6FF"/><path d="M1068 724c8-34 64-34 72 0" fill="#7BD6FF" opacity=".8"/>
+  <text x="1160" y="658" class="role">Business Owner</text><text x="1160" y="690" class="small">Outcome · SLA · exception visibility</text><text x="1160" y="718" class="small">Business success, not just bot success</text>
+</g>
+<g>
+  <rect x="630" y="105" width="340" height="115" rx="24" fill="#0D1830" stroke="#2D4E85"/>
+  <circle cx="682" cy="160" r="18" fill="#F0D55B"/><path d="M650 205c8-30 56-30 64 0" fill="#F0D55B" opacity=".8"/>
+  <text x="735" y="153" class="role">Security / Risk</text><text x="735" y="184" class="small">Policy · RBAC · approval · audit</text>
+</g>
+<g>
+  <rect x="630" y="700" width="340" height="115" rx="24" fill="#0D1830" stroke="#2D4E85"/>
+  <circle cx="682" cy="755" r="18" fill="#4EE6A8"/><path d="M650 800c8-30 56-30 64 0" fill="#4EE6A8" opacity=".8"/>
+  <text x="735" y="748" class="role">Audit / Compliance</text><text x="735" y="779" class="small">Evidence ledger · explainability</text>
+</g>
+</svg>
