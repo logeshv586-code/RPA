@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="RPA-X autonomous automation reliability control plane" />
+  <title>RPA-X Command Center</title>
+  <link rel="icon" href="/ui/rpa-x-app-icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/ui/app.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="/ui/rpa-x-app-icon.svg" alt="RPA-X" />
+        <div>
+          <strong>RPA-X</strong>
+          <span>Command Center</span>
+        </div>
+      </div>
+
+      <nav aria-label="Primary navigation">
+        <a class="active" href="#overview">Overview</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#control-loop">Control Loop</a>
+        <a href="/docs">API</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <span class="dot"></span>
+        Foundation Preview
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">AUTOMATION RELIABILITY OPERATING SYSTEM</p>
+          <h1>Enterprise Automation, under one control plane.</h1>
+          <p class="subhead">Observe, understand, recover, govern and learn across RPA runtimes, APIs, browsers and infrastructure.</p>
+        </div>
+        <div id="health-pill" class="health-pill">Checking service…</div>
+      </header>
+
+      <section id="overview" class="hero-grid">
+        <article class="hero-card primary">
+          <div class="card-label">Product North Star</div>
+          <h2>From reactive bot support to governed autonomous recovery.</h2>
+          <div class="loop-line">
+            <span>Observe</span><i>→</i><span>Understand</span><i>→</i><span>Decide</span><i>→</i><span>Heal</span><i>→</i><span>Validate</span><i>→</i><span>Learn</span>
+          </div>
+        </article>
+
+        <article class="hero-card">
+          <div class="card-label">Autonomy Model</div>
+          <div class="autonomy">
+            <div><b>A0</b><span>Observe</span></div>
+            <div><b>A1</b><span>Recommend</span></div>
+            <div><b>A2</b><span>Assist</span></div>
+            <div><b>A3</b><span>Bounded Heal</span></div>
+            <div><b>A4</b><span>Adaptive</span></div>
+          </div>
+          <p class="muted">AI confidence never grants permission. Policy determines what may execute.</p>
+        </article>
+      </section>
+
+      <section class="metric-grid" aria-label="Product principles">
+        <article><span>01</span><h3>Intent-aware</h3><p>Process Genome describes what the automation is meant to achieve.</p></article>
+        <article><span>02</span><h3>State-aware</h3><p>Live Process Twin reconstructs current execution state and expected outcomes.</p></article>
+        <article><span>03</span><h3>Policy-bounded</h3><p>Recovery actions are governed by risk, approval and environment controls.</p></article>
+        <article><span>04</span><h3>Evidence-driven</h3><p>Every diagnosis, decision, action and outcome becomes an auditable trace.</p></article>
+      </section>
+
+      <section id="control-loop" class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">RUNTIME CONTROL LOOP</p>
+            <h2>One operating path for every automation failure.</h2>
+          </div>
+        </div>
+        <div class="pipeline">
+          <div><b>01</b><span>Runtime Event</span><small>A360 · UiPath · API · Browser</small></div>
+          <div><b>02</b><span>Process Twin</span><small>Current vs expected state</small></div>
+          <div><b>03</b><span>Failure Intelligence</span><small>Evidence-led diagnosis</small></div>
+          <div><b>04</b><span>Recovery Brain</span><small>Candidate strategies</small></div>
+          <div><b>05</b><span>Policy Gate</span><small>Risk + approval</small></div>
+          <div><b>06</b><span>Validate & Learn</span><small>Outcome + Evidence Ledger</small></div>
+        </div>
+      </section>
+
+      <section id="capabilities" class="panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">UNIFIED PRODUCT CAPABILITIES</p>
+            <h2>Built as one platform, delivered in controlled stages.</h2>
+          </div>
+          <a class="text-link" href="/docs">Open API docs →</a>
+        </div>
+        <div id="capability-grid" class="capability-grid">
+          <div class="loading">Loading capability registry…</div>
+        </div>
+      </section>
+
+      <footer>
+        <span>RPA-X · Autonomous Automation Control Plane</span>
+        <span>Early foundation — not yet recommended for production use</span>
+      </footer>
+    </main>
+  </div>
+  <script src="/ui/app.js"></script>
+</body>
+</html>
