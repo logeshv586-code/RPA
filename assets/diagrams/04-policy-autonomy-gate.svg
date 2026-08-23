@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="860" viewBox="0 0 1600 860">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050914"/><stop offset="1" stop-color="#111B38"/></linearGradient>
+<linearGradient id="brain" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2CE7FF"/><stop offset=".5" stop-color="#5275FF"/><stop offset="1" stop-color="#A25CFF"/></linearGradient>
+<style>.h{font:800 40px Inter,Segoe UI,Arial;fill:#F3F8FF}.t{font:700 21px Inter,Segoe UI,Arial;fill:#F4F8FF}.s{font:500 15px Inter,Segoe UI,Arial;fill:#A7B7D2}.cap{font:800 16px Inter,Segoe UI,Arial;fill:#8EA5C8;letter-spacing:2px}</style>
+</defs>
+<rect width="1600" height="860" rx="36" fill="url(#bg)"/>
+<text x="800" y="66" text-anchor="middle" class="h">Policy-Bounded Autonomy</text>
+<text x="800" y="104" text-anchor="middle" class="s" font-size="18">AI confidence is never execution permission — policy, risk and human control remain authoritative</text>
+<!-- source -->
+<rect x="90" y="290" width="300" height="220" rx="30" fill="#0D1830" stroke="url(#brain)" stroke-width="3"/>
+<text x="240" y="335" text-anchor="middle" class="cap">RECOVERY BRAIN</text>
+<text x="240" y="385" text-anchor="middle" class="t">Candidate Action</text>
+<rect x="130" y="420" width="220" height="48" rx="15" fill="#102447"/><text x="240" y="451" text-anchor="middle" class="s">confidence 0.92</text>
+<text x="240" y="493" text-anchor="middle" class="s">evidence + history + intent</text>
+<!-- policy gate -->
+<rect x="555" y="195" width="490" height="410" rx="34" fill="#0D1731" stroke="#4854A4" stroke-width="3"/>
+<text x="800" y="242" text-anchor="middle" class="cap">DECISION AUTHORITY</text>
+<rect x="610" y="280" width="165" height="96" rx="20" fill="#121E42" stroke="#4D89FF"/><text x="692" y="318" text-anchor="middle" class="t">Risk</text><text x="692" y="346" text-anchor="middle" class="s">impact · reversibility</text>
+<rect x="825" y="280" width="165" height="96" rx="20" fill="#161C45" stroke="#856CFF"/><text x="907" y="318" text-anchor="middle" class="t">Policy</text><text x="907" y="346" text-anchor="middle" class="s">allowlist · environment</text>
+<rect x="610" y="420" width="165" height="96" rx="20" fill="#121E42" stroke="#52D9C1"/><text x="692" y="458" text-anchor="middle" class="t">Idempotency</text><text x="692" y="486" text-anchor="middle" class="s">safe to repeat?</text>
+<rect x="825" y="420" width="165" height="96" rx="20" fill="#161C45" stroke="#FFB45A"/><text x="907" y="458" text-anchor="middle" class="t">Human Gate</text><text x="907" y="486" text-anchor="middle" class="s">approval when required</text>
+<text x="800" y="566" text-anchor="middle" class="s">Policy decides the maximum autonomy allowed for this action</text>
+<!-- outcomes -->
+<rect x="1210" y="145" width="300" height="150" rx="28" fill="#102035" stroke="#4EE6A8"/>
+<text x="1360" y="190" text-anchor="middle" class="cap">ALLOW</text><text x="1360" y="229" text-anchor="middle" class="t">Bounded Auto-Heal</text><text x="1360" y="260" text-anchor="middle" class="s">low risk · allow-listed · reversible</text>
+<rect x="1210" y="355" width="300" height="150" rx="28" fill="#251D31" stroke="#FFB45A"/>
+<text x="1360" y="400" text-anchor="middle" class="cap">APPROVAL</text><text x="1360" y="439" text-anchor="middle" class="t">Human Control Gate</text><text x="1360" y="470" text-anchor="middle" class="s">medium/high impact or uncertain</text>
+<rect x="1210" y="565" width="300" height="150" rx="28" fill="#2B1725" stroke="#FF6F8C"/>
+<text x="1360" y="610" text-anchor="middle" class="cap">DENY</text><text x="1360" y="649" text-anchor="middle" class="t">Stop / Escalate</text><text x="1360" y="680" text-anchor="middle" class="s">unsafe · prohibited · insufficient evidence</text>
+<!-- arrows -->
+<g fill="none" stroke="#4F7DFF" stroke-width="4" stroke-linecap="round"><path d="M390 400H555"/><path d="M1045 330C1110 300 1150 230 1210 220"/><path d="M1045 400H1210"/><path d="M1045 470C1110 510 1150 620 1210 640"/></g>
+<!-- validation footer -->
+<rect x="350" y="700" width="850" height="92" rx="28" fill="#0B1730" stroke="#2B4A7B"/>
+<text x="775" y="738" text-anchor="middle" class="cap">AFTER EXECUTION</text>
+<text x="775" y="771" text-anchor="middle" class="t">Outcome Validator → Evidence Ledger → Recovery Memory</text>
+<path d="M1360 295V745H1200" stroke="#4EE6A8" stroke-width="3" fill="none" opacity=".7"/>
+</svg>
