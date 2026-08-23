@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.engine import classify_failure, choose_recovery
 from app.models import HealingDecision, RuntimeEvent
@@ -21,6 +24,9 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+WEB_DIR = Path(__file__).resolve().parent.parent / "web"
+app.mount("/ui", StaticFiles(directory=str(WEB_DIR), html=True), name="ui")
 
 
 @app.get("/")
