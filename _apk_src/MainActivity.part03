@@ -1,0 +1,184 @@
+        api("POST", "/api/candidates/" + Uri.encode(traineeId) + "/level/" + completed + "/complete", new JSONObject(), "", new Callback() {
+            public void ok(String response) {
+                try {
+                    JSONObject candidate = new JSONObject(response);
+                    if (completed >= 3 || "Passed".equalsIgnoreCase(candidate.optString("status"))) {
+                        showTrainingComplete(candidate);
+                    } else {
+                        showLevelPassed(completed, candidate);
+                    }
+                } catch (Exception e) {
+                    showErrorDialog("Level saved", "The level completed, but the response could not be displayed: " + e.getMessage());
+                    loadLevel(Math.min(3, completed + 1));
+                }
+            }
+            public void fail(String message) {
+                showErrorDialog("Could not complete level", message);
+                showTrainingTask();
+            }
+        });
+    }
+
+    private void showLevelPassed(int level, JSONObject c) {
+        LinearLayout body = content();
+        addBrand(body, "Level " + level + " Completed", traineeName + "  •  " + traineeId);
+        TextView check = tv("✓", 68, true);
+        check.setGravity(Gravity.CENTER);
+        check.setTextColor(green);
+        body.addView(check);
+        body.addView(pill("Your progress is saved. Continue to Level " + (level + 1) + ".", Color.parseColor("#EDF7F2"), green));
+        Button next = button("Start Level " + (level + 1), true);
+        next.setOnClickListener(v -> loadLevel(level + 1));
+        body.addView(next);
+        Button exit = button("Exit and Resume Later", false);
+        exit.setOnClickListener(v -> showRoleChoice());
+        body.addView(exit);
+        setScrollable(body);
+    }
+
+    private void showTrainingComplete(JSONObject candidate) {
+        LinearLayout body = content();
+        addBrand(body, "Training Completed", traineeName.isEmpty() ? candidate.optString("name", "Trainee") : traineeName);
+        TextView check = tv("✓", 80, true);
+        check.setGravity(Gravity.CENTER);
+        check.setTextColor(green);
+        body.addView(check);
+        TextView msg = tv("Level 1, Level 2 and Level 3 are complete.", 22, true);
+        msg.setGravity(Gravity.CENTER);
+        body.addView(msg);
+        body.addView(pill("Candidate ID: " + candidate.optString("candidate_id", traineeId) + "\nStatus: " + candidate.optString("status", "Passed") + "\nScore: " + candidate.optDouble("score", 0) + "%", Color.parseColor("#EDF7F2"), green));
+        Button done = button("Done", true);
+        done.setOnClickListener(v -> {
+            traineeId = "";
+            traineeName = "";
+            showRoleChoice();
+        });
+        body.addView(done);
+        setScrollable(body);
+    }
+
+    private void showAdminLogin() {
+        LinearLayout body = content();
+        addBrand(body, "Admin Login", "Admin-only access to dashboard, candidates, master data and configuration.");
+        EditText email = field("Admin email");
+        email.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        email.setText(DEFAULT_ADMIN_EMAIL);
+        EditText password = field("Admin password");
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        body.addView(email);
+        body.addView(password);
+
+        Button login = button("Login as Admin", true);
+        login.setOnClickListener(v -> {
+            String e = email.getText().toString().trim();
+            String p = password.getText().toString();
+            if (e.isEmpty() || p.isEmpty()) { toast("Enter admin email and password"); return; }
+            login.setEnabled(false);
+            login.setText("Signing in…");
+            try {
+                JSONObject data = new JSONObject();
+                data.put("email", e);
+                data.put("password", p);
+                api("POST", "/api/admin/login", data, "", new Callback() {
+                    public void ok(String response) {
+                        try {
+                            JSONObject r = new JSONObject(response);
+                            adminToken = r.getString("token");
+                            adminName = r.optString("name", "Training Admin");
+                            prefs.edit().putString("admin_token", adminToken).apply();
+                            showAdminDashboard();
+                        } catch (Exception ex) {
+                            showErrorDialog("Login error", ex.getMessage());
+                            showAdminLogin();
+                        }
+                    }
+                    public void fail(String message) {
+                        showErrorDialog("Admin login failed", message);
+                        showAdminLogin();
+                    }
+                });
+            } catch (JSONException ex) { toast(ex.getMessage()); }
+        });
+        body.addView(login);
+
+        Button server = button("Server / Cloudflare Connection", false);
+        server.setOnClickListener(v -> showServerSetup(false));
+        body.addView(server);
+        Button back = button("Back", false);
+        back.setOnClickListener(v -> showRoleChoice());
+        body.addView(back);
+        setScrollable(body);
+    }
+
+    private void showAdminDashboard() {
+        LinearLayout body = content();
+        addBrand(body, "Admin Dashboard", adminName + "  •  Admin only");
+        body.addView(pill("Loading trainee data…", Color.parseColor("#EDF7F2"), green));
+        setScrollable(body);
+
+        api("GET", "/api/candidates", null, adminToken, new Callback() {
+            public void ok(String response) {
+                try { renderAdminDashboard(new JSONArray(response)); }
+                catch (Exception e) {
+                    showErrorDialog("Dashboard error", e.getMessage());
+                    showAdminLogin();
+                }
+            }
+            public void fail(String message) {
+                if (message.toLowerCase(Locale.US).contains("401") || message.toLowerCase(Locale.US).contains("auth")) {
+                    adminToken = "";
+                    prefs.edit().remove("admin_token").apply();
+                    showErrorDialog("Admin session expired", "Please sign in again.");
+                    showAdminLogin();
+                } else {
+                    showErrorDialog("Dashboard unavailable", message);
+                    showAdminLogin();
+                }
+            }
+        });
+    }
+
+    private void renderAdminDashboard(JSONArray candidates) throws JSONException {
+        LinearLayout body = content();
+        addBrand(body, "Admin Dashboard", adminName + "  •  " + serverBase);
+        int total = candidates.length(), passed = 0, active = 0, notStarted = 0;
+        for (int i=0; i<candidates.length(); i++) {
+            JSONObject c = candidates.getJSONObject(i);
+            String s = c.optString("status", "").toLowerCase(Locale.US);
+            if ("passed".equals(s)) passed++;
+            else if (s.contains("progress") || s.contains("level")) active++;
+            else notStarted++;
+        }
+        body.addView(pill("Total trainees: " + total + "   •   Completed: " + passed + "   •   Active: " + active + "   •   Not started: " + notStarted, Color.parseColor("#EDF7F2"), green));
+
+        Button refresh = button("Refresh Dashboard", true);
+        refresh.setOnClickListener(v -> showAdminDashboard());
+        body.addView(refresh);
+        Button upload = button("Upload Master Excel / CSV", false);
+        upload.setOnClickListener(v -> chooseMasterFile());
+        body.addView(upload);
+        Button settings = button("Training Settings", false);
+        settings.setOnClickListener(v -> showTrainingSettings());
+        body.addView(settings);
+        Button connection = button("Server / Cloudflare Connection", false);
+        connection.setOnClickListener(v -> showServerSetup(true));
+        body.addView(connection);
+
+        TextView h = tv("Candidates", 21, true);
+        h.setTextColor(green);
+        h.setPadding(0, dp(18), 0, dp(8));
+        body.addView(h);
+        if (candidates.length() == 0) body.addView(tv("No trainees yet.", 15, false));
+        for (int i=0; i<candidates.length(); i++) {
+            JSONObject c = candidates.getJSONObject(i);
+            String cid = c.optString("candidate_id", "");
+            String name = c.optString("name", "");
+            String status = c.optString("status", "Not Started");
+            int level = c.optInt("current_level", 1);
+            double score = c.optDouble("score", 0);
+            LinearLayout card = new LinearLayout(this);
+            card.setOrientation(LinearLayout.VERTICAL);
+            card.setPadding(dp(12), dp(10), dp(12), dp(10));
+            card.setBackgroundColor(soft);
+            LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(-1, -2);
+            clp.setMargins(0, dp(6), 0, dp(6));
