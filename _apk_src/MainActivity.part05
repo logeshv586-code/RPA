@@ -1,0 +1,112 @@
+                        new AlertDialog.Builder(this).setTitle("Master Data Updated").setMessage(summary.toString()).setPositiveButton("OK", (d,w) -> showAdminDashboard()).show();
+                    } catch (Exception e) {
+                        showErrorDialog("Upload completed", response);
+                    }
+                });
+            } catch (Exception e) {
+                main.post(() -> showErrorDialog("Upload failed", e.getMessage()));
+            }
+        });
+    }
+
+    private void showServerSetup(boolean returnToDashboard) {
+        LinearLayout body = content();
+        addBrand(body, "Server / Cloudflare", "Configure the backend URL used by this device.");
+        EditText base = field("https://your-tunnel.example.com");
+        base.setText(serverBase);
+        body.addView(base);
+        body.addView(pill("Local LAN example: http://192.168.1.8:8000\nCloudflare example: https://xxxx.trycloudflare.com\nFor production, use a stable named Cloudflare Tunnel hostname.", Color.parseColor("#F7F4EA"), ink));
+        Button save = button("Save & Test Connection", true);
+        save.setOnClickListener(v -> {
+            serverBase = normalizeBase(base.getText().toString());
+            prefs.edit().putString("server_base", serverBase).apply();
+            api("GET", "/api/health", null, "", new Callback() {
+                public void ok(String r) { toast("Server connected"); if (returnToDashboard && !adminToken.isEmpty()) showAdminDashboard(); else showAdminLogin(); }
+                public void fail(String m) { showErrorDialog("Connection failed", m); }
+            });
+        });
+        body.addView(save);
+        Button cf = button("Read Current Cloudflare Tunnel URL", false);
+        cf.setOnClickListener(v -> {
+            serverBase = normalizeBase(base.getText().toString());
+            api("GET", "/api/tunnel", null, "", new Callback() {
+                public void ok(String r) {
+                    try {
+                        JSONObject j = new JSONObject(r);
+                        String found = j.optString("base_url", "");
+                        if (found.isEmpty()) {
+                            String u = j.optString("url", "");
+                            int q = u.indexOf('?'); if (q >= 0) u = u.substring(0,q);
+                            found = u;
+                        }
+                        if (found.isEmpty()) showErrorDialog("Tunnel not online", "The backend did not report a public Cloudflare URL yet.");
+                        else {
+                            base.setText(found);
+                            serverBase = normalizeBase(found);
+                            prefs.edit().putString("server_base", serverBase).apply();
+                            toast("Cloudflare URL saved");
+                        }
+                    } catch (Exception e) { showErrorDialog("Tunnel response error", e.getMessage()); }
+                }
+                public void fail(String m) { showErrorDialog("Cannot read tunnel", m); }
+            });
+        });
+        body.addView(cf);
+        Button back = button("Back", false);
+        back.setOnClickListener(v -> { if (returnToDashboard && !adminToken.isEmpty()) showAdminDashboard(); else showAdminLogin(); });
+        body.addView(back);
+        setScrollable(body);
+    }
+
+    private void api(String method, String path, JSONObject body, String token, Callback cb) {
+        network.execute(() -> {
+            HttpURLConnection c = null;
+            try {
+                URL url = new URL(serverBase + path);
+                c = (HttpURLConnection) url.openConnection();
+                c.setRequestMethod(method);
+                c.setConnectTimeout(12000);
+                c.setReadTimeout(45000);
+                c.setRequestProperty("Accept", "application/json");
+                if (token != null && !token.isEmpty()) c.setRequestProperty("Authorization", "Bearer " + token);
+                if (body != null && !"GET".equals(method) && !"DELETE".equals(method)) {
+                    c.setDoOutput(true);
+                    c.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                    byte[] bytes = body.toString().getBytes(StandardCharsets.UTF_8);
+                    try (OutputStream out = c.getOutputStream()) { out.write(bytes); }
+                }
+                int code = c.getResponseCode();
+                String response = readAll(code >= 200 && code < 300 ? c.getInputStream() : c.getErrorStream());
+                if (code < 200 || code >= 300) {
+                    String detail = response;
+                    try { detail = new JSONObject(response).optString("detail", response); } catch (Exception ignored) {}
+                    throw new IOException("HTTP " + code + " — " + detail);
+                }
+                String finalResponse = response;
+                main.post(() -> cb.ok(finalResponse));
+            } catch (Exception e) {
+                String message = e.getMessage() == null ? e.toString() : e.getMessage();
+                main.post(() -> cb.fail(message));
+            } finally {
+                if (c != null) c.disconnect();
+            }
+        });
+    }
+
+    private String readAll(InputStream in) throws IOException {
+        if (in == null) return "";
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) sb.append(line).append('\n');
+        return sb.toString().trim();
+    }
+
+    private void toast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showErrorDialog(String title, String message) {
+        new AlertDialog.Builder(this).setTitle(title).setMessage(message == null ? "Unknown error" : message).setPositiveButton("OK", null).show();
+    }
+}
