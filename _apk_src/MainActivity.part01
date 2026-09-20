@@ -1,0 +1,242 @@
+package com.minutesacademy.pickerpacker;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.OpenableColumns;
+import android.text.InputType;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class MainActivity extends Activity {
+    private static final int PICK_MASTER_FILE = 901;
+    private static final String DEFAULT_SERVER = "http://192.168.1.8:8000";
+    private static final String DEFAULT_ADMIN_EMAIL = "admin@minutesacademy.in";
+
+    private final ExecutorService network = Executors.newCachedThreadPool();
+    private final Handler main = new Handler(Looper.getMainLooper());
+    private SharedPreferences prefs;
+    private String serverBase;
+    private String adminToken = "";
+    private String adminName = "Training Admin";
+
+    private String traineeId = "";
+    private String traineeName = "";
+    private int currentLevel = 1;
+    private JSONArray tasks = new JSONArray();
+    private int taskIndex = 0;
+    private boolean scanBusy = false;
+
+    private int green;
+    private int gold;
+    private int ink;
+    private int soft;
+    private int red;
+
+    interface Callback {
+        void ok(String body);
+        void fail(String message);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        green = Color.parseColor("#0B5D4B");
+        gold = Color.parseColor("#D9A441");
+        ink = Color.parseColor("#16342D");
+        soft = Color.parseColor("#F4F7F5");
+        red = Color.parseColor("#B42318");
+        prefs = getSharedPreferences("picker_packer_training", MODE_PRIVATE);
+        serverBase = normalizeBase(prefs.getString("server_base", DEFAULT_SERVER));
+        adminToken = prefs.getString("admin_token", "");
+        showRoleChoice();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        network.shutdownNow();
+    }
+
+    private String normalizeBase(String raw) {
+        if (raw == null) return DEFAULT_SERVER;
+        String x = raw.trim();
+        int q = x.indexOf('?');
+        if (q >= 0) x = x.substring(0, q);
+        while (x.endsWith("/")) x = x.substring(0, x.length() - 1);
+        if (!x.startsWith("http://") && !x.startsWith("https://")) x = "https://" + x;
+        return x;
+    }
+
+    private int dp(int n) {
+        return (int) (n * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    private TextView tv(String text, int sp, boolean bold) {
+        TextView v = new TextView(this);
+        v.setText(text);
+        v.setTextSize(sp);
+        v.setTextColor(ink);
+        if (bold) v.setTypeface(null, android.graphics.Typeface.BOLD);
+        v.setPadding(0, dp(4), 0, dp(4));
+        return v;
+    }
+
+    private Button button(String text, boolean primary) {
+        Button b = new Button(this);
+        b.setText(text);
+        b.setAllCaps(false);
+        b.setTextSize(16);
+        b.setTextColor(primary ? Color.WHITE : green);
+        b.setBackgroundColor(primary ? green : Color.parseColor("#EAF3EF"));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(52));
+        lp.setMargins(0, dp(6), 0, dp(6));
+        b.setLayoutParams(lp);
+        return b;
+    }
+
+    private EditText field(String hint) {
+        EditText e = new EditText(this);
+        e.setHint(hint);
+        e.setTextSize(17);
+        e.setSingleLine(true);
+        e.setPadding(dp(12), dp(8), dp(12), dp(8));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(54));
+        lp.setMargins(0, dp(5), 0, dp(5));
+        e.setLayoutParams(lp);
+        return e;
+    }
+
+    private LinearLayout content() {
+        LinearLayout body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setPadding(dp(18), dp(18), dp(18), dp(28));
+        body.setBackgroundColor(Color.WHITE);
+        return body;
+    }
+
+    private void setScrollable(LinearLayout body) {
+        ScrollView sc = new ScrollView(this);
+        sc.setFillViewport(true);
+        sc.addView(body, new ScrollView.LayoutParams(-1, -2));
+        setContentView(sc);
+    }
+
+    private void addBrand(LinearLayout body, String heading, String subheading) {
+        TextView mark = tv("MINUTES ACADEMY  •  PICKER-PACKER", 13, true);
+        mark.setTextColor(gold);
+        body.addView(mark);
+        TextView title = tv(heading, 28, true);
+        title.setTextColor(green);
+        body.addView(title);
+        if (subheading != null && !subheading.isEmpty()) {
+            TextView sub = tv(subheading, 15, false);
+            sub.setTextColor(Color.DKGRAY);
+            sub.setPadding(0, dp(3), 0, dp(14));
+            body.addView(sub);
+        }
+    }
+
+    private TextView pill(String text, int bg, int fg) {
+        TextView p = tv(text, 14, true);
+        p.setTextColor(fg);
+        p.setBackgroundColor(bg);
+        p.setPadding(dp(12), dp(10), dp(12), dp(10));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(0, dp(6), 0, dp(6));
+        p.setLayoutParams(lp);
+        return p;
+    }
+
+    private void showRoleChoice() {
+        LinearLayout body = content();
+        addBrand(body, "Training Terminal", "Built for UROVO DT50S and Android handheld scanners");
+        body.addView(pill("Trainee access does not require a password. Enter only Name + Employee/Candidate ID.", Color.parseColor("#EDF7F2"), green));
+
+        Button trainee = button("Start / Resume Training", true);
+        trainee.setOnClickListener(v -> showTraineeEntry());
+        body.addView(trainee);
+
+        Button admin = button("Admin Login", false);
+        admin.setOnClickListener(v -> showAdminLogin());
+        body.addView(admin);
+
+        TextView levels = tv("Configured training: Level 1 – Location Scanning  •  Level 2 – Product/Barcode Scanning  •  Level 3 – Bin Challenge", 15, false);
+        levels.setPadding(0, dp(18), 0, dp(10));
+        body.addView(levels);
+
+        TextView server = tv("Training server: " + serverBase, 12, false);
+        server.setTextColor(Color.GRAY);
+        body.addView(server);
+        setScrollable(body);
+    }
+
+    private void showTraineeEntry() {
+        LinearLayout body = content();
+        addBrand(body, "Trainee Entry", "No login password is required for trainees.");
+        EditText name = field("Full name");
+        EditText id = field("Employee / Candidate ID");
+        id.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+        body.addView(name);
+        body.addView(id);
+        body.addView(pill("You will only see your training flow: Level 1 → Level 2 → Level 3.", Color.parseColor("#F7F4EA"), ink));
+
+        Button start = button("Continue Training", true);
+        start.setOnClickListener(v -> {
+            String n = name.getText().toString().trim();
+            String cid = id.getText().toString().trim();
+            if (n.isEmpty() || cid.isEmpty()) {
+                toast("Enter both Name and Candidate ID");
+                return;
+            }
+            start.setEnabled(false);
+            start.setText("Connecting…");
+            try {
+                JSONObject payload = new JSONObject();
+                payload.put("name", n);
+                payload.put("store_id", cid);
+                payload.put("store_code", "STORE");
+                api("POST", "/api/candidates/onboard", payload, "", new Callback() {
+                    public void ok(String response) {
+                        try {
+                            JSONObject c = new JSONObject(response);
+                            traineeName = c.optString("name", n);
+                            traineeId = c.optString("candidate_id", cid);
+                            String status = c.optString("status", "");
