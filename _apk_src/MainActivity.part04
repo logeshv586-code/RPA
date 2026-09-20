@@ -1,0 +1,147 @@
+            card.setLayoutParams(clp);
+            card.addView(tv(name + "  •  " + cid, 17, true));
+            card.addView(tv("Status: " + status + "   |   Level: " + level + "   |   Score: " + String.format(Locale.US, "%.1f", score) + "%", 13, false));
+            LinearLayout actions = new LinearLayout(this);
+            actions.setOrientation(LinearLayout.HORIZONTAL);
+            Button reset = new Button(this);
+            reset.setText("Reset"); reset.setAllCaps(false);
+            Button delete = new Button(this);
+            delete.setText("Delete"); delete.setAllCaps(false);
+            actions.addView(reset, new LinearLayout.LayoutParams(0, dp(44), 1));
+            actions.addView(delete, new LinearLayout.LayoutParams(0, dp(44), 1));
+            reset.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle("Reset training?").setMessage(name + " (" + cid + ") will restart from Level 1.")
+                    .setNegativeButton("Cancel", null).setPositiveButton("Reset", (d,w) -> adminCandidateAction("POST", cid, false)).show());
+            delete.setOnClickListener(v -> new AlertDialog.Builder(this).setTitle("Delete candidate?").setMessage("Delete " + name + " and all scan history?")
+                    .setNegativeButton("Cancel", null).setPositiveButton("Delete", (d,w) -> adminCandidateAction("DELETE", cid, true)).show());
+            card.addView(actions);
+            body.addView(card);
+        }
+
+        Button logout = button("Admin Logout", false);
+        logout.setOnClickListener(v -> {
+            String token = adminToken;
+            adminToken = "";
+            prefs.edit().remove("admin_token").apply();
+            api("POST", "/api/admin/logout", new JSONObject(), token, new Callback() {
+                public void ok(String x) { showRoleChoice(); }
+                public void fail(String x) { showRoleChoice(); }
+            });
+        });
+        body.addView(logout);
+        setScrollable(body);
+    }
+
+    private void adminCandidateAction(String method, String cid, boolean delete) {
+        String path = "/api/candidates/" + Uri.encode(cid) + (delete ? "" : "/reset");
+        api(method, path, delete ? null : new JSONObject(), adminToken, new Callback() {
+            public void ok(String body) { toast(delete ? "Candidate deleted" : "Training reset"); showAdminDashboard(); }
+            public void fail(String message) { showErrorDialog("Action failed", message); }
+        });
+    }
+
+    private void showTrainingSettings() {
+        api("GET", "/api/settings", null, "", new Callback() {
+            public void ok(String response) {
+                try { renderSettings(new JSONObject(response)); }
+                catch (Exception e) { showErrorDialog("Settings error", e.getMessage()); }
+            }
+            public void fail(String message) { showErrorDialog("Settings unavailable", message); }
+        });
+    }
+
+    private void renderSettings(JSONObject s) {
+        LinearLayout body = content();
+        addBrand(body, "Training Settings", "Admin only");
+        String[] keys = {"location_accuracy","upc_accuracy","product_accuracy","quantity_accuracy","overall_score","error_handling","level1_count","level2_per_category"};
+        String[] labels = {"Location accuracy %","UPC accuracy %","Product accuracy %","Quantity accuracy %","Overall pass score %","Error handling %","Level 1 task count","Level 2 items per category"};
+        EditText[] fields = new EditText[keys.length];
+        for (int i=0; i<keys.length; i++) {
+            body.addView(tv(labels[i], 13, true));
+            fields[i] = field(labels[i]);
+            fields[i].setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            fields[i].setText(s.optString(keys[i], ""));
+            body.addView(fields[i]);
+        }
+        Button save = button("Save Settings", true);
+        save.setOnClickListener(v -> {
+            try {
+                JSONObject values = new JSONObject();
+                for (int i=0; i<keys.length; i++) values.put(keys[i], fields[i].getText().toString().trim());
+                JSONObject payload = new JSONObject(); payload.put("values", values);
+                api("PUT", "/api/settings", payload, adminToken, new Callback() {
+                    public void ok(String x) { toast("Settings saved"); showAdminDashboard(); }
+                    public void fail(String m) { showErrorDialog("Save failed", m); }
+                });
+            } catch (Exception e) { toast(e.getMessage()); }
+        });
+        body.addView(save);
+        Button back = button("Back to Dashboard", false);
+        back.setOnClickListener(v -> showAdminDashboard());
+        body.addView(back);
+        setScrollable(body);
+    }
+
+    private void chooseMasterFile() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"text/csv","application/vnd.ms-excel","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        startActivityForResult(i, PICK_MASTER_FILE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_MASTER_FILE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            new AlertDialog.Builder(this).setTitle("Upload master file?").setMessage(fileName(uri) + "\n\nThe backend will auto-detect shelves, products, or candidate master data.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Upload", (d,w) -> uploadMaster(uri)).show();
+        }
+    }
+
+    private String fileName(Uri uri) {
+        String name = "master.xlsx";
+        Cursor c = null;
+        try {
+            c = getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null);
+            if (c != null && c.moveToFirst()) name = c.getString(0);
+        } catch (Exception ignored) {} finally { if (c != null) c.close(); }
+        return name;
+    }
+
+    private void uploadMaster(Uri uri) {
+        Toast.makeText(this, "Uploading " + fileName(uri) + "…", Toast.LENGTH_LONG).show();
+        network.execute(() -> {
+            try {
+                String boundary = "----PickerPacker" + System.currentTimeMillis();
+                URL url = new URL(serverBase + "/api/master/import");
+                HttpURLConnection c = (HttpURLConnection) url.openConnection();
+                c.setConnectTimeout(15000); c.setReadTimeout(120000); c.setDoOutput(true); c.setRequestMethod("POST");
+                c.setRequestProperty("Authorization", "Bearer " + adminToken);
+                c.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                String name = fileName(uri);
+                String mime = getContentResolver().getType(uri);
+                if (mime == null) mime = "application/octet-stream";
+                try (DataOutputStream out = new DataOutputStream(c.getOutputStream()); InputStream in = getContentResolver().openInputStream(uri)) {
+                    out.writeBytes("--" + boundary + "\r\n");
+                    out.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"" + name.replace("\"", "") + "\"\r\n");
+                    out.writeBytes("Content-Type: " + mime + "\r\n\r\n");
+                    byte[] buf = new byte[8192]; int n;
+                    if (in == null) throw new IOException("Could not open selected file");
+                    while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                    out.writeBytes("\r\n--" + boundary + "--\r\n");
+                    out.flush();
+                }
+                int code = c.getResponseCode();
+                String response = readAll(code >= 200 && code < 300 ? c.getInputStream() : c.getErrorStream());
+                if (code < 200 || code >= 300) throw new IOException("HTTP " + code + ": " + response);
+                main.post(() -> {
+                    try {
+                        JSONObject r = new JSONObject(response);
+                        StringBuilder summary = new StringBuilder("Upload completed.");
+                        JSONArray detected = r.optJSONArray("detected");
+                        if (detected != null) summary.append("\nDetected: ").append(detected.toString());
+                        if (r.has("shelves")) summary.append("\nShelves: ").append(r.optInt("shelves"));
+                        if (r.has("products")) summary.append("\nProducts: ").append(r.optInt("products"));
+                        if (r.has("candidates")) summary.append("\nCandidates: ").append(r.optInt("candidates"));
