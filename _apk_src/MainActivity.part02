@@ -1,0 +1,198 @@
+                            currentLevel = Math.max(1, Math.min(3, c.optInt("current_level", 1)));
+                            if ("Passed".equalsIgnoreCase(status)) showTrainingComplete(c);
+                            else loadLevel(currentLevel);
+                        } catch (Exception ex) {
+                            showErrorDialog("Could not start training", ex.getMessage());
+                            showTraineeEntry();
+                        }
+                    }
+                    public void fail(String message) {
+                        showErrorDialog("Server connection failed", message + "\n\nAsk the administrator to verify the Server / Cloudflare URL.");
+                        showTraineeEntry();
+                    }
+                });
+            } catch (JSONException e) {
+                toast(e.getMessage());
+            }
+        });
+        body.addView(start);
+        Button back = button("Back", false);
+        back.setOnClickListener(v -> showRoleChoice());
+        body.addView(back);
+        setScrollable(body);
+    }
+
+    private void loadLevel(int level) {
+        currentLevel = level;
+        String path;
+        if (level == 1) path = "/api/locations/random?count=10";
+        else if (level == 2) path = "/api/tasks/level2?per_category=5";
+        else path = "/api/tasks/level3?count=50";
+        api("GET", path, null, "", new Callback() {
+            public void ok(String response) {
+                try {
+                    tasks = new JSONArray(response);
+                    taskIndex = 0;
+                    if (tasks.length() == 0) {
+                        showErrorDialog("Training data is empty", "The administrator must upload the shelf/product master Excel or CSV before this level can run.");
+                        showRoleChoice();
+                    } else {
+                        showTrainingTask();
+                    }
+                } catch (Exception e) {
+                    showErrorDialog("Invalid training data", e.getMessage());
+                    showRoleChoice();
+                }
+            }
+            public void fail(String message) {
+                showErrorDialog("Unable to load Level " + level, message);
+                showRoleChoice();
+            }
+        });
+    }
+
+    private void showTrainingTask() {
+        if (taskIndex >= tasks.length()) {
+            completeCurrentLevel();
+            return;
+        }
+        scanBusy = false;
+        LinearLayout body = content();
+        String levelName = currentLevel == 1 ? "Location Scanning" : currentLevel == 2 ? "Product / Barcode Scanning" : "Bin Challenge";
+        addBrand(body, "Level " + currentLevel + " — " + levelName, traineeName + "  •  " + traineeId);
+
+        int pct = tasks.length() == 0 ? 0 : (taskIndex * 100 / tasks.length());
+        ProgressBar progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        progress.setMax(100);
+        progress.setProgress(pct);
+        body.addView(progress, new LinearLayout.LayoutParams(-1, dp(12)));
+        body.addView(tv("Task " + (taskIndex + 1) + " of " + tasks.length(), 14, true));
+
+        final String expected;
+        String detail;
+        try {
+            if (currentLevel == 2) {
+                JSONObject t = tasks.getJSONObject(taskIndex);
+                expected = t.optString("upc", "");
+                detail = t.optString("name", "Product") + "\nCategory: " + t.optString("category", "") + "\nExpected product barcode: " + expected;
+            } else {
+                expected = tasks.getString(taskIndex);
+                detail = currentLevel == 1 ? "Go to the shown shelf/location and scan its location label:\n\n" + expected : "Find and scan the shown bin/location:\n\n" + expected;
+            }
+        } catch (JSONException e) {
+            showErrorDialog("Task error", e.getMessage());
+            showRoleChoice();
+            return;
+        }
+
+        TextView target = tv(detail, currentLevel == 2 ? 18 : 24, true);
+        target.setGravity(Gravity.CENTER);
+        target.setTextColor(green);
+        target.setBackgroundColor(Color.parseColor("#F0F7F4"));
+        target.setPadding(dp(14), dp(22), dp(14), dp(22));
+        LinearLayout.LayoutParams targetLp = new LinearLayout.LayoutParams(-1, -2);
+        targetLp.setMargins(0, dp(12), 0, dp(12));
+        target.setLayoutParams(targetLp);
+        body.addView(target);
+
+        String instruction = currentLevel == 2
+                ? "Use the UROVO hardware scanner. Any valid product barcode / QR scan is recorded for Level 2."
+                : "Use the UROVO hardware scanner. The scanned value must match the shown location exactly.";
+        body.addView(pill(instruction, Color.parseColor("#FFF8E5"), ink));
+
+        EditText scan = field("Scanner input");
+        scan.setTextSize(21);
+        scan.setGravity(Gravity.CENTER);
+        scan.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        body.addView(scan);
+        TextView result = tv("Scanner ready — press the hardware scan trigger.", 15, true);
+        result.setGravity(Gravity.CENTER);
+        body.addView(result);
+
+        View.OnClickListener submitAction = v -> submitScan(expected, scan, result);
+        Button submit = button("Verify Scan", true);
+        submit.setOnClickListener(submitAction);
+        body.addView(submit);
+        scan.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                submitScan(expected, scan, result);
+                return true;
+            }
+            return false;
+        });
+        scan.setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
+                submitScan(expected, scan, result);
+                return true;
+            }
+            return false;
+        });
+        scan.requestFocus();
+
+        Button exit = button("Exit Training", false);
+        exit.setOnClickListener(v -> new AlertDialog.Builder(this)
+                .setTitle("Exit training?")
+                .setMessage("Your completed scans are already saved. You can resume later with the same Candidate ID.")
+                .setNegativeButton("Stay", null)
+                .setPositiveButton("Exit", (d, w) -> showRoleChoice()).show());
+        body.addView(exit);
+        setScrollable(body);
+    }
+
+    private void submitScan(String expected, EditText scanField, TextView result) {
+        if (scanBusy) return;
+        String scanned = scanField.getText().toString().trim();
+        if (scanned.isEmpty()) {
+            result.setTextColor(red);
+            result.setText("No scan received. Scan the label or enter it manually.");
+            return;
+        }
+        scanBusy = true;
+        result.setTextColor(gold);
+        result.setText("Verifying…");
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("candidate_id", traineeId);
+            payload.put("level", currentLevel);
+            payload.put("task_type", currentLevel == 1 ? "location" : currentLevel == 2 ? "upc" : "bin_challenge");
+            payload.put("expected", expected);
+            payload.put("scanned", scanned);
+            payload.put("attempts", 1);
+            api("POST", "/api/scan", payload, "", new Callback() {
+                public void ok(String response) {
+                    try {
+                        JSONObject r = new JSONObject(response);
+                        boolean passed = r.optBoolean("passed", false);
+                        String msg = r.optString("message", passed ? "Verified" : "Try again");
+                        if (passed) {
+                            result.setTextColor(green);
+                            result.setText(msg);
+                            taskIndex++;
+                            main.postDelayed(() -> showTrainingTask(), 650);
+                        } else {
+                            scanBusy = false;
+                            result.setTextColor(red);
+                            result.setText(msg);
+                            scanField.setText("");
+                            scanField.requestFocus();
+                        }
+                    } catch (Exception e) {
+                        scanBusy = false;
+                        result.setTextColor(red);
+                        result.setText(e.getMessage());
+                    }
+                }
+                public void fail(String message) {
+                    scanBusy = false;
+                    result.setTextColor(red);
+                    result.setText("Network error: " + message);
+                }
+            });
+        } catch (JSONException e) {
+            scanBusy = false;
+            result.setText(e.getMessage());
+        }
+    }
+
+    private void completeCurrentLevel() {
+        int completed = currentLevel;
